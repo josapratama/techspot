@@ -1,63 +1,117 @@
-# Tech SPot
+# Tech Spot 📱
 
-[Tech Spot] (https://techspot.josapratama.com) Tech Spot online store for various kinds of smartphones
+> Modern Full-Stack Smartphone & Gadget E-Commerce Ecosystem.
 
-Table of Contents:
+Tech Spot adalah platform toko online modern untuk berbagai macam smartphone dan perangkat mobile dengan arsitektur micro-service / decoupled (Frontend Vite/React + Backend Hono/Prisma/PostgreSQL).
 
-- [Tech Spot](#tech-spot)
-  - [Links](#links)
-  - [Features](#features)
-  - [UI Designs](#ui-designs)
-    - [Home Page](#home-page)
+---
 
-## Links
+## 🌐 Arsitektur & Tautan Repositori
 
-- Website/Frontend: <https://techspot.josapratama.com>
-  - Backend: <https://techspot-backend.josapratama.com>
-- Repositories:
-  - General: <https://github.com/josapratama/techspot>
-  - Backend: <https://github.com/josapratama/techspot-backend>
-  - Frontend: <https://github.com/josapratama/techspot-frontend>
+| Layanan | Repositori GitHub | Teknologi Utama | Status |
+|:---|:---|:---|:---|
+| **Blueprint & Arsitektur** | [josapratama/techspot](https://github.com/josapratama/techspot) | ERD, SQL Schema, Arsitektur Sistem | Ready |
+| **Backend REST API** | [josapratama/techspot-backend](https://github.com/josapratama/techspot-backend) | Hono.js, Prisma ORM, Oslo Auth, TypeScript, Bun | Active |
+| **Frontend Web App** | [josapratama/techspot-frontend](https://github.com/josapratama/techspot-frontend) | React, Vite, Radix UI Themes, Tailwind CSS | Active |
 
-Inspirations:
+---
 
-- <https://eraspace.com/>
-- <https://www.sentraponsel.com/>
-- <https://jagofon.com/en>
+## ✨ Fitur Utama
 
-## Features
+- **Katalog Produk Dinamis:**
+  - Hero banner & showcase smartphone terbaru.
+  - Filter berdasarkan Brand (Apple, Samsung, Xiaomi, dll) dan pencarian instan.
+- **Detail Produk Komprehensif:**
+  - Galeri gambar, spesifikasi SKU, harga format Rupiah (IDR), dan deskripsi lengkap.
+  - Pemilihan kuantitas dan integrasi keranjang belanja.
+- **Keranjang Belanja (Shopping Cart):**
+  - Item listing dinamis tersinkronisasi ke server melalui REST API.
+  - Kalkulasi total otomatis & opsi hapus item.
+- **Autentikasi & Akun:**
+  - Registrasi & Login terenkripsi (Oslo / Argond2-based hashing).
+  - Manajemen sesi berbasis Bearer token & cookie.
+- **Alur Checkout & Transaksi:**
+  - Verifikasi keranjang sebelum checkout.
+  - Perubahan status pesanan otomatis (`CART` $\rightarrow$ `PAID`).
 
-- Home page
-  - Hero section
-  - Products catalogue
-- Product page
-  - Image
-  - SKU (stock keeping unit)
-  - Name
-  - Price
-  - Description
-  - Add to cart form: quantity input & add to cart button
-  - Buy Now Button
-- Shopping cart page
-  - Product items to buy
-    - Image, name, price, quantity, total (price x quantity)
-    - Remove item
-  - Link: continue shopping, go to products catalogue
-  - Link: checkout
-- Checkout page
-  - Order summary
-    - Product items to buy
-    - Grand total of all product items to buy
-- Place order / transaction is being processed
+---
 
-## UI Designs
+## 🗄️ Entity Relationship Diagram (ERD)
 
-- Figma: <https://www.figma.com/design/L3OixiKckJyxLUNtkZuAcZ/techspot>
+```mermaid
+erDiagram
+    USER ||--o{ ORDER : places
+    USER ||--o| PASSWORD : has
+    BRAND ||--o{ PRODUCT : manufactures
+    ORDER ||--o{ ORDER_ITEM : contains
+    PRODUCT ||--o{ ORDER_ITEM : includes
 
-### Home Page
+    USER {
+        string id PK
+        string username UK
+        string email UK
+        datetime createdAt
+        datetime updatedAt
+    }
 
-<img alt="Home Page" src="./designs/home.jpg" width="400" />
+    PASSWORD {
+        string id PK
+        string hash
+        string userId FK
+    }
 
-## Entity Relationship Diagram (ERD)
+    BRAND {
+        string id PK
+        string name
+        string headquarters
+        string type
+    }
 
-![ERD](./diagrams/erd.svg)
+    PRODUCT {
+        string id PK
+        string slug UK
+        string name UK
+        string imageURL
+        int price
+        string sku UK
+        string brandId FK
+    }
+
+    ORDER {
+        string id PK
+        string userId FK
+        string status
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    ORDER_ITEM {
+        string id PK
+        int quantity
+        string productId FK
+        string orderId FK
+    }
+```
+
+Format vektor SVG lengkap juga tersedia di [`./diagrams/erd.svg`](./diagrams/erd.svg) dan skema SQL di [`./diagrams/schema.sql`](./diagrams/schema.sql).
+
+---
+
+## 🚀 Panduan Memulai Cepat (Local Development)
+
+### 1. Menjalankan Backend (`techspot-backend`)
+```bash
+cd techspot-backend
+bun install
+bunx prisma generate
+bun run dev
+# Server berjalan di http://localhost:3000
+```
+
+### 2. Menjalankan Frontend (`techspot-frontend`)
+```bash
+cd techspot-frontend
+bun install
+bun run dev
+# Web app berjalan di http://localhost:5173
+```
